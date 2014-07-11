@@ -18,8 +18,7 @@ import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
 import org.apache.commons.codec.binary.Base64;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,12 +28,19 @@ import java.util.concurrent.Executors;
 
 public class Main extends Application {
 
+    private JsonDataSource dataSource;
+    private List<Job> jobs = Collections.emptyList();
+    private Canvas canvas;
+
     public static void main(String[] args) {
         launch(args);
     }
 
-    private List<Job> jobs = Collections.emptyList();
-    private Canvas canvas;
+    @Override
+    public void init() throws Exception {
+        dataSource = new HttpJsonDataSource();
+//        dataSource = new FileJsonDataSource(new File("data.json"));
+    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -55,50 +61,32 @@ public class Main extends Application {
     }
 
     private void refreshData() {
-        // TODO: extract to class
-        // TODO: dump json data from server to file and add a dummy loader for offline testing
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            getDataSource().loadData(inputStream -> {
+                ObjectMapper objectMapper = new ObjectMapper();
                 try {
-                    Properties config = new Properties();
-                    config.load(new FileInputStream("config.properties"));
+                    JsonResponse jsonResponse = objectMapper.readValue(inputStream, JsonResponse.class);
 
-                    String host = config.getProperty("host");
-                    String login = config.getProperty("login");
-                    String password = config.getProperty("token");
-
-                    final URL url = new URL(String.format("%s/api/json?tree=jobs[name,color]", host));
-                    final URLConnection connection = url.openConnection();
-
-                    connection.setRequestProperty("Authorization", "Basic " + base64(login, password));
-
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonResponse jsonResponse = objectMapper.readValue(connection.getInputStream(), JsonResponse.class);
-
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            setJobs(jsonResponse.getJobs());
-                        }
-                    });
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                    Platform.runLater(() -> setJobs(jsonResponse.getJobs()));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
-            }
+            });
         });
+    }
+
+    public JsonDataSource getDataSource() {
+        return dataSource;
     }
 
     private void setJobs(List<Job> jobs) {
         this.jobs = jobs;
 
-        // TODO: replace direct call with continous drawing loop
-        drawShapes(jobs);
+        // TODO: replace direct call with continuous drawing loop
+        drawShapes();
     }
 
-    private void drawShapes(List<Job> jobs) {
+    private void drawShapes() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         gc.setFill(Color.AQUA);
@@ -124,10 +112,6 @@ public class Main extends Application {
             // TODO: handle all the other states
             return Color.GREY;
         }
-    }
-
-    private static String base64(String username, String password) {
-        return Base64.encodeBase64String(String.format("%s:%s", username, password).getBytes());
     }
 
 }
