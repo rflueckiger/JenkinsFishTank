@@ -22,12 +22,16 @@ public class FishTank {
         Fish fish = fishes.get(name);
         if (fish == null) {
             fish = new Fish(name, state);
-            fish.setX(rnd.nextDouble() * getWidth());
-            fish.setY((getHeight() - getWaterHeight()) + rnd.nextDouble() * getWaterHeight());
+            assignNewLocation(fish);
             fishes.put(name, fish);
         } else {
             fish.setState(state);
         }
+    }
+
+    public void assignNewLocation(Fish fish) {
+        fish.setX(rnd.nextDouble() * getWidth());
+        fish.setY((getHeight() - getWaterHeight()) + rnd.nextDouble() * getWaterHeight());
     }
 
     public double getWidth() {
