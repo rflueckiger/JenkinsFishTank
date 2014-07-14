@@ -2,35 +2,27 @@ package ch.nickthegreek.jenkins.fishtank;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.beans.binding.DoubleExpression;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
-import org.apache.commons.codec.binary.Base64;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.Executors;
 
 public class Main extends Application {
 
+    private final FishTank fishTank = new FishTank();
+
     private JsonDataSource dataSource;
-    private List<Job> jobs = Collections.emptyList();
-    private Canvas canvas;
+    private double airWaterRatio = 0.15;
 
     public static void main(String[] args) {
         launch(args);
@@ -46,18 +38,56 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("JenkinsFishTank");
 
-        // TODO: canvas must grow with scene
-        // TODO: fullscreen support
+        // TODO: add fullscreen option
 
         Group root = new Group();
-        canvas = new Canvas(1024, 800);
+        Scene scene = new Scene(root, 1024, 800);
 
+        // create canvas
+        Canvas canvas = new Canvas();
+        canvas.widthProperty().bind(primaryStage.widthProperty());
+        canvas.heightProperty().bind(primaryStage.heightProperty());
+
+        fishTank.widthProperty().bind(canvas.widthProperty());
+        fishTank.heightProperty().bind(canvas.heightProperty());
+        fishTank.waterHeightProperty().bind(canvas.heightProperty().multiply(1 - airWaterRatio));
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                double width = gc.getCanvas().getWidth();
+                double height = gc.getCanvas().getHeight();
+
+                // update state of fishes
+//                updateFishTank(width, height, now); // TODO: add fancy fish tank animations (e.g. water surface waves)
+//                fishTank.udpate(now); // TODO: animate the fishes
+
+                // clear screen
+                gc.clearRect(0, 0, width, height);
+
+                drawFishTank(gc, width, height);
+                fishTank.drawAll(gc);
+            }
+        }.start();
+
+        // add canvas to scene
         root.getChildren().add(canvas);
 
-        primaryStage.setScene(new Scene(root, 1024, 800));
+        primaryStage.setScene(scene);
         primaryStage.show();
 
+        // load data
         refreshData();
+    }
+
+    private void drawFishTank(GraphicsContext gc, double width, double height) {
+        double airHeight = height * airWaterRatio;
+        double waterHeight = height - airHeight;
+
+        gc.setFill(Color.AQUA);
+        gc.fillRect(0, airHeight, width, waterHeight);
     }
 
     private void refreshData() {
@@ -80,37 +110,21 @@ public class Main extends Application {
     }
 
     private void setJobs(List<Job> jobs) {
-        this.jobs = jobs;
-
-        // TODO: replace direct call with continuous drawing loop
-        drawShapes();
-    }
-
-    private void drawShapes() {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        gc.setFill(Color.AQUA);
-        gc.fillRect(0, 50, gc.getCanvas().getWidth(), gc.getCanvas().getHeight() - 50);
-
-        Random rnd = new Random();
+        // TODO: this should probably be done from the loader thread
+        // TODO: sync every job by itself into the model, so the drawing loop only stopped for short periods of time
         for (Job job : jobs) {
-            double x = rnd.nextDouble() * gc.getCanvas().getWidth();
-            double y = rnd.nextDouble() * gc.getCanvas().getHeight();
-
-            gc.setFill(getColor(job.getColor()));
-            gc.fillOval(x, y, 10, 10);
-            gc.fillText(job.getName(), x, y);
+            fishTank.addOrUpdateData(job.getName(), deriveState(job.getColor()));
         }
     }
 
-    private Paint getColor(String color) {
+    private FishState deriveState(String color) {
+        // TODO: add mappings from all the other jenkins colors to fish states.
         if ("blue".equals(color)) {
-            return Color.BLUE;
+            return FishState.ALIVE;
         } else if ("red".equals(color)) {
-            return Color.RED;
+            return FishState.DEAD;
         } else {
-            // TODO: handle all the other states
-            return Color.GREY;
+            return FishState.GHOST;
         }
     }
 
