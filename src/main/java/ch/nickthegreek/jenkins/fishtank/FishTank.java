@@ -1,5 +1,6 @@
 package ch.nickthegreek.jenkins.fishtank;
 
+import ch.nickthegreek.jenkins.fishtank.simplefish.SimpleFish;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.GraphicsContext;
@@ -23,7 +24,7 @@ public class FishTank {
     public void addOrUpdateData(String name, FishState state) {
         Fish fish = fishes.get(name);
         if (fish == null) {
-            fish = new Fish(name, state);
+            fish = new SimpleFish(name, state);
             assignNewLocation(fish);
             fishes.put(name, fish);
         } else {
