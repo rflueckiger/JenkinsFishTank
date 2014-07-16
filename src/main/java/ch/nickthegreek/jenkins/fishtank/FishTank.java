@@ -3,6 +3,8 @@ package ch.nickthegreek.jenkins.fishtank;
 import ch.nickthegreek.jenkins.fishtank.simplefish.SimpleFish;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -20,6 +22,19 @@ public class FishTank {
     private final Random rnd = new Random();
 
     private double airWaterRatio = 0.1;
+    private Rectangle2D waterBoundary;
+
+    private final ChangeListener<Number> updateWaterBoundaryListener = (observable, oldValue, newValue) -> {
+        double waterOffset = getHeight() * airWaterRatio;
+        double waterHeight = getHeight() - waterOffset;
+
+        waterBoundary = new Rectangle2D(0, waterOffset, getWidth(), waterHeight);
+    };
+
+    public FishTank() {
+        widthProperty().addListener(updateWaterBoundaryListener);
+        heightProperty().addListener(updateWaterBoundaryListener);
+    }
 
     public void addOrUpdateData(String name, FishState state) {
         Fish fish = fishes.get(name);
@@ -44,7 +59,7 @@ public class FishTank {
         updateSelf(now);
 
         for (Fish fish : fishes.values()) {
-            fish.update(now);
+            fish.update(now, waterBoundary);
         }
     }
 

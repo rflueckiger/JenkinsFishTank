@@ -1,11 +1,12 @@
 package ch.nickthegreek.jenkins.fishtank;
 
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 
 public interface Fish {
 
-    void update(long now);
+    void update(long now, Rectangle2D boundary);
 
     void draw(GraphicsContext gc);
 

@@ -3,6 +3,7 @@ package ch.nickthegreek.jenkins.fishtank.simplefish;
 import ch.nickthegreek.jenkins.fishtank.Fish;
 import ch.nickthegreek.jenkins.fishtank.FishState;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -52,7 +53,7 @@ public class SimpleFish implements Fish {
     }
 
     @Override
-    public void update(long now) {
+    public void update(long now, Rectangle2D boundary) {
         // TODO: consider trajectory for nicer fish painting
         // TODO: consider move switch during single update step
 
@@ -62,7 +63,7 @@ public class SimpleFish implements Fish {
         }
 
         // 2. fish has a plan -> calculate current position in move
-        currentMove.moveFish(now);
+        currentMove.moveFish(now, boundary);
         if (currentMove.isFinished()) {
             currentMove = null;
         }
