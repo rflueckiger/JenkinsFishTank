@@ -36,7 +36,6 @@ public class SimpleFish implements Fish {
             this.state = state;
 
             // TODO: add more renderer and special state transition renderer
-            // TODO: fish should look like fish :-)
             if (FishState.ALIVE.equals(state)) {
                 renderer = ALIVE_RENDERER;
             } else if (FishState.DEAD.equals(state)) {
@@ -71,6 +70,10 @@ public class SimpleFish implements Fish {
 
     @Override
     public void draw(GraphicsContext gc) {
+        // TODO: fish should look like fish :-)
+        // TODO: keep fish name labels always visible, if possible
+        // TODO: maybe only label fish in a special state (e.g. dead, dead_pending, sick, sick_pending)
+
         renderer.draw(gc);
     }
 

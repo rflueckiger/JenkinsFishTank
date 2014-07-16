@@ -1,16 +1,18 @@
 package ch.nickthegreek.jenkins.fishtank;
 
 
+import ch.nickthegreek.jenkins.fishtank.util.FileJsonDataSource;
+import ch.nickthegreek.jenkins.fishtank.util.FishEvent;
+import ch.nickthegreek.jenkins.fishtank.util.FishEventScript;
+import ch.nickthegreek.jenkins.fishtank.util.FishEventScriptLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.binding.DoubleExpression;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -22,6 +24,7 @@ public class Main extends Application {
     private final FishTank fishTank = new FishTank();
 
     private JsonDataSource dataSource;
+    private FishEventScript script;
 
 
     public static void main(String[] args) {
@@ -30,8 +33,19 @@ public class Main extends Application {
 
     @Override
     public void init() throws Exception {
-//        dataSource = new HttpJsonDataSource();
-        dataSource = new FileJsonDataSource(new File("data.json"));
+        // init data source
+        String testData = Config.getInstance().getTestData();
+        if (testData != null) {
+            dataSource = new FileJsonDataSource(new File(testData));
+        } else {
+            dataSource = new HttpJsonDataSource();
+        }
+
+        // init script if configured
+        String testScript = Config.getInstance().getTestScript();
+        if (testScript != null) {
+            script = new FishEventScriptLoader(new File(testScript)).getFishEventScript();
+        }
     }
 
     @Override
@@ -53,6 +67,8 @@ public class Main extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                handleScriptedEvents(now);
+
                 GraphicsContext gc = canvas.getGraphicsContext2D();
 
                 double width = gc.getCanvas().getWidth();
@@ -76,6 +92,19 @@ public class Main extends Application {
 
         // load initial data (later: start data polling thread)
         refreshData();
+    }
+
+    private void handleScriptedEvents(long now) {
+        if (script != null) {
+            if (!script.isStarted()) {
+                script.start(now);
+            }
+
+            List<FishEvent> events = script.getEvents(now);
+            for (FishEvent event : events) {
+                fishTank.addOrUpdateData(event.getName(), event.getState());
+            }
+        }
     }
 
     private void refreshData() {

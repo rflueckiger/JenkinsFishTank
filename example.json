@@ -1,0 +1,1 @@
+{"jobs":[{"name":"JenkinsFishTank_Trunk_Build","color":"blue"},{"name":"JenkinsFishTank_Tag_Build","color":"blue"},{"name":"JenkinsFishTank_Tag_Deploy","color":"disabled"},{"name":"SomeOtherBuild","color":"red"}]}

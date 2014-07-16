@@ -1,3 +1,6 @@
 host=https://your.jenkins.server.com
 login=
 token=
+
+#test.data=example.json
+#test.script=example.script

@@ -1,4 +1,6 @@
-package ch.nickthegreek.jenkins.fishtank;
+package ch.nickthegreek.jenkins.fishtank.util;
+
+import ch.nickthegreek.jenkins.fishtank.JsonDataSource;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -17,12 +17,9 @@ public class HttpJsonDataSource implements JsonDataSource {
         InputStream inputStream = null;
 
         try {
-            Properties config = new Properties();
-            config.load(new FileInputStream("config.properties"));
-
-            String host = config.getProperty("host");
-            String login = config.getProperty("login");
-            String password = config.getProperty("token");
+            String host = Config.getInstance().getHost();
+            String login = Config.getInstance().getLogin();
+            String password = Config.getInstance().getToken();
 
             final URL url = new URL(String.format("%s/api/json?tree=jobs[name,color]", host));
 
