@@ -22,7 +22,7 @@ public class Main extends Application {
     private final FishTank fishTank = new FishTank();
 
     private JsonDataSource dataSource;
-    private double airWaterRatio = 0.15;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -30,18 +30,17 @@ public class Main extends Application {
 
     @Override
     public void init() throws Exception {
-        dataSource = new HttpJsonDataSource();
-//        dataSource = new FileJsonDataSource(new File("data.json"));
+//        dataSource = new HttpJsonDataSource();
+        dataSource = new FileJsonDataSource(new File("data.json"));
     }
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("JenkinsFishTank");
 
-        // TODO: add fullscreen option
-
-        Group root = new Group();
-        Scene scene = new Scene(root, 1024, 800);
+        primaryStage.setWidth(1024);
+        primaryStage.setHeight(800);
+        primaryStage.setFullScreen(false);
 
         // create canvas
         Canvas canvas = new Canvas();
@@ -50,44 +49,33 @@ public class Main extends Application {
 
         fishTank.widthProperty().bind(canvas.widthProperty());
         fishTank.heightProperty().bind(canvas.heightProperty());
-        fishTank.waterHeightProperty().bind(canvas.heightProperty().multiply(1 - airWaterRatio));
 
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        new AnimationTimer() {
+        AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                GraphicsContext gc = canvas.getGraphicsContext2D();
+
                 double width = gc.getCanvas().getWidth();
                 double height = gc.getCanvas().getHeight();
 
-                // update state of fishes
-//                updateFishTank(width, height, now); // TODO: add fancy fish tank animations (e.g. water surface waves)
-//                fishTank.udpate(now); // TODO: animate the fishes
+                // 1. update
+                fishTank.update(now);
 
-                // clear screen
+                // 2. clear
                 gc.clearRect(0, 0, width, height);
 
-                drawFishTank(gc, width, height);
+                // 3. draw
                 fishTank.drawAll(gc);
             }
-        }.start();
+        };
 
-        // add canvas to scene
-        root.getChildren().add(canvas);
-
-        primaryStage.setScene(scene);
+        primaryStage.setScene(new Scene(new Group(canvas)));
         primaryStage.show();
 
-        // load data
+        timer.start();
+
+        // load initial data (later: start data polling thread)
         refreshData();
-    }
-
-    private void drawFishTank(GraphicsContext gc, double width, double height) {
-        double airHeight = height * airWaterRatio;
-        double waterHeight = height - airHeight;
-
-        gc.setFill(Color.AQUA);
-        gc.fillRect(0, airHeight, width, waterHeight);
     }
 
     private void refreshData() {
@@ -111,7 +99,7 @@ public class Main extends Application {
 
     private void setJobs(List<Job> jobs) {
         // TODO: this should probably be done from the loader thread
-        // TODO: sync every job by itself into the model, so the drawing loop only stopped for short periods of time
+        // TODO: sync every job by itself into the model, so the drawing loop is only stopped for short periods of time
         for (Job job : jobs) {
             fishTank.addOrUpdateData(job.getName(), deriveState(job.getColor()));
         }
