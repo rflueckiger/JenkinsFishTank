@@ -135,11 +135,18 @@ public class Main extends Application {
     }
 
     private FishState deriveState(String color) {
-        // TODO: add mappings from all the other jenkins colors to fish states.
         if ("blue".equals(color)) {
             return FishState.ALIVE;
+        } else if ("blue_anime".equals(color)) {
+            return FishState.ALIVE_PENDING;
         } else if ("red".equals(color)) {
             return FishState.DEAD;
+        } else if ("red_anime".equals(color)) {
+            return FishState.DEAD_PENDING;
+        } else if ("yellow".equals(color)) {
+            return FishState.SICK;
+        } else if ("yellow_anime".equals(color)) {
+            return FishState.SICK_PENDING;
         } else {
             return FishState.GHOST;
         }

@@ -36,10 +36,12 @@ public class SimpleFish implements Fish {
             this.state = state;
 
             // TODO: add more renderer and special state transition renderer
-            if (FishState.ALIVE.equals(state)) {
+            if (FishState.ALIVE.equals(state) || FishState.ALIVE_PENDING.equals(state)) {
                 renderer = ALIVE_RENDERER;
-            } else if (FishState.DEAD.equals(state)) {
+            } else if (FishState.DEAD.equals(state) || FishState.DEAD_PENDING.equals(state)) {
                 renderer = DEAD_RENDERER;
+            } else if (FishState.SICK.equals(state) || FishState.SICK_PENDING.equals(state)) {
+                renderer = SICK_RENDERER;
             } else {
                 renderer = GHOST_RENDERER;
             }
@@ -108,6 +110,13 @@ public class SimpleFish implements Fish {
 
     FishRenderer ALIVE_RENDERER = gc -> {
         gc.setFill(Color.GREEN);
+        gc.setFont(Font.font(9));
+        gc.fillOval(getX(), getY(), 10, 10);
+        gc.fillText(getName(), getX(), getY());
+    };
+
+    FishRenderer SICK_RENDERER = gc -> {
+        gc.setFill(Color.YELLOW);
         gc.setFont(Font.font(9));
         gc.fillOval(getX(), getY(), 10, 10);
         gc.fillText(getName(), getX(), getY());
