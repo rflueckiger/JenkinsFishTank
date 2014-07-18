@@ -1,37 +1,51 @@
 package ch.nickthegreek.jenkins.fishtank.simplefish;
 
+import ch.nickthegreek.jenkins.fishtank.Fish;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import java.util.Random;
 
-class Move {
+public class SwimAnimation extends Animation {
 
-    private final SimpleFish fish;
-    private final long startTime;
-    private final Point2D start;
-    private final Point2D target;
-
+    private final Color color;
+    private final Fish fish;
     private final Random rnd = new Random();
 
-    private boolean finished = false;
+    private long startTime;
+    private Point2D start;
+    private Point2D target;
 
-    public Move(SimpleFish fish, long startTime) {
+    public SwimAnimation(boolean repeating, Fish fish, Color color) {
+        super(repeating);
+
         this.fish = fish;
+        this.color = color;
+    }
+
+    @Override
+    protected void doInit(long startTime) {
         this.startTime = startTime;
 
-        this.start = new Point2D(fish.getX(), fish.getY());
+        start = new Point2D(fish.getX(), fish.getY());
 
         // set a target location for the move
         double xRange = rnd.nextGaussian() * 100 * (rnd.nextBoolean() ? 1 : -1);
         double yRange = rnd.nextGaussian() * 50 * (rnd.nextBoolean() ? 1 : -1);
-        this.target = new Point2D(start.getX() + xRange, start.getY() + yRange);
+        target = new Point2D(start.getX() + xRange, start.getY() + yRange);
     }
 
-    public void moveFish(long now, Rectangle2D boundary) {
+    @Override
+    protected void doDraw(GraphicsContext gc) {
+        gc.setFill(color);
+        gc.fillOval(fish.getX(), fish.getY(), 10, 10);
+    }
+
+    @Override
+    protected boolean doUpdate(long now, Rectangle2D boundary) {
         // TODO: consider the size of the fish (currently, everything drawn to the left of x,y is still outside the boundary)
-        // TODO: add fish tracer for debugging (constant to define name of one fish for tracing)
-        // TODO: fish should have more interesting moves, e.g. dashes (velocity curves, etc.)
         double xDelta = target.getX() - start.getX();
         double yDelta = target.getY() - start.getY();
         double distance = Math.sqrt(Math.pow(xDelta, 2) + Math.pow(yDelta, 2));
@@ -64,12 +78,7 @@ class Move {
         fish.setX(currentX);
         fish.setY(currentY);
 
-        if (factor >= 1) {
-            finished = true;
-        }
+        return factor >= 1;
     }
 
-    public boolean isFinished() {
-        return finished;
-    }
 }

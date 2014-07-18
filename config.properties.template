@@ -4,3 +4,5 @@ token=
 
 #test.data=example.json
 #test.script=example.script
+
+#test.tracerFish=nameOfFishToBeTraced

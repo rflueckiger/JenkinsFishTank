@@ -46,4 +46,6 @@ public class Config {
         return config.getProperty("test.script");
     }
 
+    public String getTestTracerFish() {return config.getProperty("test.tracerFish"); }
+
 }
