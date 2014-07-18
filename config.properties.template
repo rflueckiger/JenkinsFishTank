@@ -2,7 +2,14 @@ host=https://your.jenkins.server.com
 login=
 token=
 
-#test.data=example.json
-#test.script=example.script
+# if set, data will be loaded from json file (no remoting necessary)
+#
+# test.data=example.json
 
-#test.tracerFish=nameOfFishToBeTraced
+# if set, the given fish event script will be loaded and executed
+#
+# test.script=example.script
+
+# If set, trace information about the fish with the given name will printed (lot of output!!!)
+#
+# test.tracerFish=nameOfFishToBeTraced
