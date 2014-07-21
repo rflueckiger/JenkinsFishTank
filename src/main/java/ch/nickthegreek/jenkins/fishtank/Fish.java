@@ -6,7 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 public interface Fish {
 
-    void update(long now, Rectangle2D boundary);
+    void update(long now, FishTankMetrics metrics);
 
     void draw(GraphicsContext gc);
 

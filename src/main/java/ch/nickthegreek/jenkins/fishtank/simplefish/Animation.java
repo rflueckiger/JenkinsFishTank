@@ -1,5 +1,6 @@
 package ch.nickthegreek.jenkins.fishtank.simplefish;
 
+import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -9,29 +10,33 @@ abstract class Animation {
     private boolean finished = false;
     private boolean repeating = false;
 
+    private long startTime;
+
     public Animation(boolean repeating) {
         this.repeating = repeating;
     }
 
-    public void start(long startTime) {
+    public void start(long startTime, FishTankMetrics metrics) {
         finished = false;
 
-        doInit(startTime);
+        this.startTime = startTime;
+        doInit(startTime, metrics);
 
         started = true;
     }
 
-    protected abstract void doInit(long startTime);
+    protected void doInit(long startTime, FishTankMetrics metrics) {
+    }
 
-    public void update(long now, Rectangle2D boundary) {
+    public void update(long now, FishTankMetrics metrics) {
         if (!isStarted()) {
             throw new IllegalStateException("animation must be started first.");
         }
 
-        finished = doUpdate(now, boundary);
+        finished = doUpdate(now, metrics);
     }
 
-    protected abstract boolean doUpdate(long now, Rectangle2D boundary);
+    protected abstract boolean doUpdate(long now, FishTankMetrics metrics);
 
     public void draw(GraphicsContext gc) {
         doDraw(gc);
@@ -49,5 +54,9 @@ abstract class Animation {
 
     public boolean isRepeating() {
         return repeating;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 }

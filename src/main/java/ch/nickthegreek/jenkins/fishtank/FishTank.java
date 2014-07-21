@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class FishTank {
+public class FishTank implements FishTankMetrics {
 
     private Map<String, Fish> fishes = new HashMap<>();
 
@@ -22,12 +22,15 @@ public class FishTank {
     private final Random rnd = new Random();
 
     private double airWaterRatio = 0.1;
+
+    private Rectangle2D boundary;
     private Rectangle2D waterBoundary;
 
     private final ChangeListener<Number> updateWaterBoundaryListener = (observable, oldValue, newValue) -> {
         double waterOffset = getHeight() * airWaterRatio;
         double waterHeight = getHeight() - waterOffset;
 
+        boundary = new Rectangle2D(0, 0, getWidth(), getHeight());
         waterBoundary = new Rectangle2D(0, waterOffset, getWidth(), waterHeight);
     };
 
@@ -59,7 +62,7 @@ public class FishTank {
         updateSelf(now);
 
         for (Fish fish : fishes.values()) {
-            fish.update(now, waterBoundary);
+            fish.update(now, this);
         }
     }
 
@@ -99,4 +102,13 @@ public class FishTank {
         return heightProperty;
     }
 
+    @Override
+    public Rectangle2D getAquaticBoundary() {
+        return waterBoundary;
+    }
+
+    @Override
+    public Rectangle2D getBoundary() {
+        return boundary;
+    }
 }

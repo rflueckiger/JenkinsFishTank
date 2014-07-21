@@ -1,6 +1,7 @@
 package ch.nickthegreek.jenkins.fishtank.simplefish;
 
 import ch.nickthegreek.jenkins.fishtank.Fish;
+import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -14,7 +15,6 @@ public class SwimAnimation extends Animation {
     private final Fish fish;
     private final Random rnd = new Random();
 
-    private long startTime;
     private Point2D start;
     private Point2D target;
 
@@ -26,9 +26,7 @@ public class SwimAnimation extends Animation {
     }
 
     @Override
-    protected void doInit(long startTime) {
-        this.startTime = startTime;
-
+    protected void doInit(long startTime, FishTankMetrics metrics) {
         start = new Point2D(fish.getX(), fish.getY());
 
         // set a target location for the move
@@ -44,7 +42,7 @@ public class SwimAnimation extends Animation {
     }
 
     @Override
-    protected boolean doUpdate(long now, Rectangle2D boundary) {
+    protected boolean doUpdate(long now, FishTankMetrics metrics) {
         // TODO: consider the size of the fish (currently, everything drawn to the left of x,y is still outside the boundary)
         double xDelta = target.getX() - start.getX();
         double yDelta = target.getY() - start.getY();
@@ -52,13 +50,15 @@ public class SwimAnimation extends Animation {
         double pixelsPerNanoSecond = 10d / (1000d * 1000d * 1000d);
         double moveDuration = distance / pixelsPerNanoSecond;
 
-        double elapsedTime = now - startTime;
+        double elapsedTime = now - getStartTime();
 
         elapsedTime = Math.min(moveDuration, elapsedTime);
 
         double factor = elapsedTime / moveDuration;
         double currentX = start.getX() + (xDelta * factor);
         double currentY = start.getY() + (yDelta * factor);
+
+        Rectangle2D boundary = metrics.getAquaticBoundary();
 
         // the simple fish continues his unfinished path like a billiard ball when hitting a wall
         if (currentX < boundary.getMinX()) {
