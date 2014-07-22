@@ -17,6 +17,8 @@ import static ch.nickthegreek.jenkins.fishtank.FishState.*;
 
 public class SimpleFish implements Fish {
 
+    private static final StateTransitions transitions = new StateTransitions();
+
     private final String name;
     private final Queue<Animation> queuedAnimations = new LinkedList<>();
 
@@ -51,76 +53,9 @@ public class SimpleFish implements Fish {
             // TODO: add pulsating animation for "pending" fishes
             // TODO: add alternate animation for ghost fishes (slower?)
             // TODO: add more fish drawing variety (e.g. alive fishes in different green/blue shades)
-            // TODO: extract animation mapping to separate "configuration-like" class!
 
-            if (this.state == null) {
-                if (state.equals(ALIVE))                { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(ALIVE_PENDING))   { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(SICK))            { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(SICK_PENDING))    { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(DEAD))            { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(DEAD_PENDING))    { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(GHOST))           { forceAnimations(new SwimAnimation(true, this, Color.GREY)); }
-                else { throw new IllegalArgumentException(String.format("unknown target state: %s", state)); }
-            } else if (this.state.equals(ALIVE)) {
-                if (state.equals(ALIVE_PENDING))        { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(SICK))            { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(SICK_PENDING))    { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(DEAD))            { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(DEAD_PENDING))    { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(GHOST))           { forceAnimations(new SwimAnimation(true, this, Color.GREY)); }
-                else { throw new IllegalArgumentException(String.format("unknown target state: %s", state)); }
-            } else if (this.state.equals(ALIVE_PENDING)) {
-                if (state.equals(ALIVE))                { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(SICK))            { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(SICK_PENDING))    { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(DEAD))            { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(DEAD_PENDING))    { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(GHOST))           { forceAnimations(new SwimAnimation(true, this, Color.GREY)); }
-                else { throw new IllegalArgumentException(String.format("unknown target state: %s", state)); }
-            } else if (this.state.equals(SICK)) {
-                if (state.equals(ALIVE))                { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(ALIVE_PENDING))   { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(SICK_PENDING))    { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(DEAD))            { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(DEAD_PENDING))    { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(GHOST))           { forceAnimations(new SwimAnimation(true, this, Color.GREY)); }
-                else { throw new IllegalArgumentException(String.format("unknown target state: %s", state)); }
-            } else if (this.state.equals(SICK_PENDING)) {
-                if (state.equals(ALIVE))                { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(ALIVE_PENDING))   { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(SICK))            { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(DEAD))            { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(DEAD_PENDING))    { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(GHOST))           { forceAnimations(new SwimAnimation(true, this, Color.GREY)); }
-                else { throw new IllegalArgumentException(String.format("unknown target state: %s", state)); }
-            } else if (this.state.equals(DEAD)) {
-                if (state.equals(ALIVE))                { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(ALIVE_PENDING))   { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(SICK))            { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(SICK_PENDING))    { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(DEAD_PENDING))    { forceAnimations(new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(GHOST))           { forceAnimations(new SwimAnimation(true, this, Color.GREY)); }
-                else { throw new IllegalArgumentException(String.format("unknown target state: %s", state)); }
-            } else if (this.state.equals(DEAD_PENDING)) {
-                if (state.equals(ALIVE))                { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(ALIVE_PENDING))   { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(SICK))            { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(SICK_PENDING))    { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(DEAD))            { forceAnimations(new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(GHOST))           { forceAnimations(new SwimAnimation(true, this, Color.GREY)); }
-                else { throw new IllegalArgumentException(String.format("unknown target state: %s", state)); }
-            } else if (this.state.equals(GHOST)) {
-                if (state.equals(ALIVE))                { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(ALIVE_PENDING))   { forceAnimations(new SwimAnimation(true, this, Color.GREEN)); }
-                else if (state.equals(SICK))            { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(SICK_PENDING))    { forceAnimations(new SwimAnimation(true, this, Color.YELLOW)); }
-                else if (state.equals(DEAD))            { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else if (state.equals(DEAD_PENDING))    { forceAnimations(new SurfaceAnimation(this, Color.RED), new FloatAnimation(this, Color.RED)); }
-                else { throw new IllegalArgumentException(String.format("unknown target state: %s", state)); }
-            } else {
-                throw new IllegalStateException(String.format("unknown current state: %s", this.state));
-            }
+            Animation[] animations = transitions.nextAnimations(this.state, state);
+            forceAnimations(animations);
 
             if (fishTracing) fishTracing(String.format("fish state changed from: %s to %s", this.state, state));
             if (fishTracing) fishTracing(String.format("queuedAnimations: %s", queuedAnimations.size()));
@@ -155,7 +90,7 @@ public class SimpleFish implements Fish {
             if (queuedAnimations.isEmpty() && currentAnimation.isRepeating()) {
                 if (fishTracing) fishTracing(String.format("fish update @ %s - animation finished, restarting current animation %s", now, currentAnimation));
 
-                currentAnimation.start(now, metrics);
+                currentAnimation.init(this, now, metrics);
             } else {
                 if (currentAnimation == null) {
                     throw new IllegalStateException("no fish animation available.");
@@ -165,10 +100,10 @@ public class SimpleFish implements Fish {
 
                 if (fishTracing) fishTracing(String.format("fish update @ %s - assigning animation from queue %s", now, currentAnimation));
 
-                currentAnimation.start(now, metrics);
+                currentAnimation.init(this, now, metrics);
             }
         } else if (!currentAnimation.isStarted()) {
-            currentAnimation.start(now, metrics);
+            currentAnimation.init(this, now, metrics);
         }
 
         currentAnimation.update(now, metrics);

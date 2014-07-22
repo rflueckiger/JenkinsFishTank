@@ -10,15 +10,13 @@ import java.util.Random;
 public class FloatAnimation extends Animation {
 
     private final Random rnd = new Random();
-
-    private final Fish fish;
     private final Color color;
+
     private long markTime;
 
-    public FloatAnimation(Fish fish, Color color) {
-        super(false);
+    public FloatAnimation(Color color) {
+        super(true);
 
-        this.fish = fish;
         this.color = color;
     }
 
@@ -33,12 +31,12 @@ public class FloatAnimation extends Animation {
         double pixelsPerNanoSecond = 1d / (1000d * 1000d * 1000d);
         double distanceCovered = elapsedTime * pixelsPerNanoSecond;
 
-        double newX = fish.getX() + ((rnd.nextBoolean() ? 1 : -1) * distanceCovered);
+        double newX = getFish().getX() + ((rnd.nextBoolean() ? 1 : -1) * distanceCovered);
 
         newX = Math.min(newX, metrics.getAquaticBoundary().getMaxX());
         newX = Math.max(metrics.getAquaticBoundary().getMinX(), newX);
 
-        fish.setX(newX);
+        getFish().setX(newX);
 
         markTime = now;
         return false;
@@ -47,6 +45,10 @@ public class FloatAnimation extends Animation {
     @Override
     protected void doDraw(GraphicsContext gc) {
         gc.setFill(color);
-        gc.fillOval(fish.getX(), fish.getY(), 10, 10);
+        gc.fillOval(getFish().getX(), getFish().getY(), 10, 10);
+    }
+
+    public static FloatAnimation red() {
+        return new FloatAnimation(Color.RED);
     }
 }

@@ -1,5 +1,6 @@
 package ch.nickthegreek.jenkins.fishtank.simplefish;
 
+import ch.nickthegreek.jenkins.fishtank.Fish;
 import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -10,13 +11,16 @@ abstract class Animation {
     private boolean finished = false;
     private boolean repeating = false;
 
+    private Fish fish;
     private long startTime;
 
     public Animation(boolean repeating) {
         this.repeating = repeating;
     }
 
-    public void start(long startTime, FishTankMetrics metrics) {
+    public void init(Fish fish, long startTime, FishTankMetrics metrics) {
+        this.fish = fish;
+
         finished = false;
 
         this.startTime = startTime;
@@ -59,4 +63,9 @@ abstract class Animation {
     public long getStartTime() {
         return startTime;
     }
+
+    protected Fish getFish() {
+        return fish;
+    }
+
 }

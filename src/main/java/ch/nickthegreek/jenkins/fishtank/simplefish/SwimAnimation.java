@@ -1,6 +1,5 @@
 package ch.nickthegreek.jenkins.fishtank.simplefish;
 
-import ch.nickthegreek.jenkins.fishtank.Fish;
 import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -12,22 +11,20 @@ import java.util.Random;
 public class SwimAnimation extends Animation {
 
     private final Color color;
-    private final Fish fish;
     private final Random rnd = new Random();
 
     private Point2D start;
     private Point2D target;
 
-    public SwimAnimation(boolean repeating, Fish fish, Color color) {
-        super(repeating);
+    public SwimAnimation(Color color) {
+        super(true);
 
-        this.fish = fish;
         this.color = color;
     }
 
     @Override
     protected void doInit(long startTime, FishTankMetrics metrics) {
-        start = new Point2D(fish.getX(), fish.getY());
+        start = new Point2D(getFish().getX(), getFish().getY());
 
         // set a target location for the move
         double xRange = rnd.nextGaussian() * 100 * (rnd.nextBoolean() ? 1 : -1);
@@ -38,7 +35,7 @@ public class SwimAnimation extends Animation {
     @Override
     protected void doDraw(GraphicsContext gc) {
         gc.setFill(color);
-        gc.fillOval(fish.getX(), fish.getY(), 10, 10);
+        gc.fillOval(getFish().getX(), getFish().getY(), 10, 10);
     }
 
     @Override
@@ -75,10 +72,23 @@ public class SwimAnimation extends Animation {
             currentY = (2 * boundary.getMaxY()) - currentY;
         }
 
-        fish.setX(currentX);
-        fish.setY(currentY);
+        getFish().setX(currentX);
+        getFish().setY(currentY);
 
         return factor >= 1;
     }
 
+    public static SwimAnimation green() {
+        return new SwimAnimation(Color.GREEN);
+    }
+
+
+    public static SwimAnimation yellow() {
+        return new SwimAnimation(Color.YELLOW);
+    }
+
+
+    public static SwimAnimation grey() {
+        return new SwimAnimation(Color.GREY);
+    }
 }
