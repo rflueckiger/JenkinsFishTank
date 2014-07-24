@@ -16,62 +16,62 @@ public class StateTransitions {
     }
 
     {
-        addTransition(null,          ALIVE,          SwimAnimation::green);
-        addTransition(null,          ALIVE_PENDING,  SwimAnimation::green);
-        addTransition(null,          SICK,           SwimAnimation::yellow);
-        addTransition(null,          SICK_PENDING,   SwimAnimation::yellow);
-        addTransition(null,          DEAD,           SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(null,          DEAD_PENDING,   SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(null,          GHOST,          SwimAnimation::grey);
+        addTransition(null,          ALIVE,          AliveSwimAnimation::create);
+        addTransition(null,          ALIVE_PENDING,  AliveSwimAnimation::create);
+        addTransition(null,          SICK,           SickSwimAnimation::create);
+        addTransition(null,          SICK_PENDING,   SickSwimAnimation::create);
+        addTransition(null,          DEAD,           SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(null,          DEAD_PENDING,   SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(null,          GHOST,          GhostSwimAnimation::create);
 
-        addTransition(ALIVE,         ALIVE_PENDING,  SwimAnimation::green);
-        addTransition(ALIVE,         SICK,           SwimAnimation::yellow);
-        addTransition(ALIVE,         SICK_PENDING,   SwimAnimation::yellow);
-        addTransition(ALIVE,         DEAD,           SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(ALIVE,         DEAD_PENDING,   SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(ALIVE,         GHOST,          SwimAnimation::grey);
+        addTransition(ALIVE,         ALIVE_PENDING,  AliveSwimAnimation::create);
+        addTransition(ALIVE,         SICK,           SickSwimAnimation::create);
+        addTransition(ALIVE,         SICK_PENDING,   SickSwimAnimation::create);
+        addTransition(ALIVE,         DEAD,           SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(ALIVE,         DEAD_PENDING,   SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(ALIVE,         GHOST,          GhostSwimAnimation::create);
 
-        addTransition(ALIVE_PENDING, ALIVE,          SwimAnimation::green);
-        addTransition(ALIVE_PENDING, SICK,           SwimAnimation::yellow);
-        addTransition(ALIVE_PENDING, SICK_PENDING,   SwimAnimation::yellow);
-        addTransition(ALIVE_PENDING, DEAD,           SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(ALIVE_PENDING, DEAD_PENDING,   SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(ALIVE_PENDING, GHOST,          SwimAnimation::grey);
+        addTransition(ALIVE_PENDING, ALIVE,          AliveSwimAnimation::create);
+        addTransition(ALIVE_PENDING, SICK,           SickSwimAnimation::create);
+        addTransition(ALIVE_PENDING, SICK_PENDING,   SickSwimAnimation::create);
+        addTransition(ALIVE_PENDING, DEAD,           SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(ALIVE_PENDING, DEAD_PENDING,   SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(ALIVE_PENDING, GHOST,          GhostSwimAnimation::create);
 
-        addTransition(SICK,          ALIVE,          SwimAnimation::green);
-        addTransition(SICK,          ALIVE_PENDING,  SwimAnimation::green);
-        addTransition(SICK,          SICK_PENDING,   SwimAnimation::yellow);
-        addTransition(SICK,          DEAD,           SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(SICK,          DEAD_PENDING,   SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(SICK,          GHOST,          SwimAnimation::grey);
+        addTransition(SICK,          ALIVE,          AliveSwimAnimation::create);
+        addTransition(SICK,          ALIVE_PENDING,  AliveSwimAnimation::create);
+        addTransition(SICK,          SICK_PENDING,   SickSwimAnimation::create);
+        addTransition(SICK,          DEAD,           SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(SICK,          DEAD_PENDING,   SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(SICK,          GHOST,          GhostSwimAnimation::create);
         
-        addTransition(SICK_PENDING,  ALIVE,          SwimAnimation::green);
-        addTransition(SICK_PENDING,  ALIVE_PENDING,  SwimAnimation::green);
-        addTransition(SICK_PENDING,  SICK,           SwimAnimation::yellow);
-        addTransition(SICK_PENDING,  DEAD,           SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(SICK_PENDING,  DEAD_PENDING,   SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(SICK_PENDING,  GHOST,          SwimAnimation::grey);
+        addTransition(SICK_PENDING,  ALIVE,          AliveSwimAnimation::create);
+        addTransition(SICK_PENDING,  ALIVE_PENDING,  AliveSwimAnimation::create);
+        addTransition(SICK_PENDING,  SICK,           SickSwimAnimation::create);
+        addTransition(SICK_PENDING,  DEAD,           SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(SICK_PENDING,  DEAD_PENDING,   SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(SICK_PENDING,  GHOST,          GhostSwimAnimation::create);
 
-        addTransition(DEAD,          ALIVE,          SwimAnimation::green);
-        addTransition(DEAD,          ALIVE_PENDING,  SwimAnimation::green);
-        addTransition(DEAD,          SICK,           SwimAnimation::yellow);
-        addTransition(DEAD,          SICK_PENDING,   SwimAnimation::yellow);
-        addTransition(DEAD,          DEAD_PENDING,   FloatAnimation::red);
-        addTransition(DEAD,          GHOST,          SwimAnimation::grey);
+        addTransition(DEAD,          ALIVE,          AliveSwimAnimation::create);
+        addTransition(DEAD,          ALIVE_PENDING,  AliveSwimAnimation::create);
+        addTransition(DEAD,          SICK,           SickSwimAnimation::create);
+        addTransition(DEAD,          SICK_PENDING,   SickSwimAnimation::create);
+        addTransition(DEAD,          DEAD_PENDING,   FloatAnimation::create);
+        addTransition(DEAD,          GHOST,          GhostSwimAnimation::create);
 
-        addTransition(DEAD_PENDING,  ALIVE,          SwimAnimation::green);
-        addTransition(DEAD_PENDING,  ALIVE_PENDING,  SwimAnimation::green);
-        addTransition(DEAD_PENDING,  SICK,           SwimAnimation::yellow);
-        addTransition(DEAD_PENDING,  SICK_PENDING,   SwimAnimation::yellow);
-        addTransition(DEAD_PENDING,  DEAD,           FloatAnimation::red);
-        addTransition(DEAD_PENDING,  GHOST,          SwimAnimation::grey);
+        addTransition(DEAD_PENDING,  ALIVE,          AliveSwimAnimation::create);
+        addTransition(DEAD_PENDING,  ALIVE_PENDING,  AliveSwimAnimation::create);
+        addTransition(DEAD_PENDING,  SICK,           SickSwimAnimation::create);
+        addTransition(DEAD_PENDING,  SICK_PENDING,   SickSwimAnimation::create);
+        addTransition(DEAD_PENDING,  DEAD,           FloatAnimation::create);
+        addTransition(DEAD_PENDING,  GHOST,          GhostSwimAnimation::create);
 
-        addTransition(GHOST,         ALIVE,          SwimAnimation::green);
-        addTransition(GHOST,         ALIVE_PENDING,  SwimAnimation::green);
-        addTransition(GHOST,         SICK,           SwimAnimation::yellow);
-        addTransition(GHOST,         SICK_PENDING,   SwimAnimation::yellow);
-        addTransition(GHOST,         DEAD,           SurfaceAnimation::red, FloatAnimation::red);
-        addTransition(GHOST,         DEAD_PENDING,   SurfaceAnimation::red, FloatAnimation::red);
+        addTransition(GHOST,         ALIVE,          AliveSwimAnimation::create);
+        addTransition(GHOST,         ALIVE_PENDING,  AliveSwimAnimation::create);
+        addTransition(GHOST,         SICK,           SickSwimAnimation::create);
+        addTransition(GHOST,         SICK_PENDING,   SickSwimAnimation::create);
+        addTransition(GHOST,         DEAD,           SurfaceAnimation::create, FloatAnimation::create);
+        addTransition(GHOST,         DEAD_PENDING,   SurfaceAnimation::create, FloatAnimation::create);
     }
     
     private void addTransition(FishState from, FishState to, AnimationFactoryMethod... animationsFactoryMethods) {

@@ -24,4 +24,8 @@ public interface Fish {
 
     String getName();
 
+    void setAngle(double angle);
+
+    double getAngle();
+
 }

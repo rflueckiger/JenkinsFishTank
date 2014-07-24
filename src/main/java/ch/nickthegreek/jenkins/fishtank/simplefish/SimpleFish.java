@@ -25,6 +25,7 @@ public class SimpleFish implements Fish {
     private FishState state;
     private double x;
     private double y;
+    private double angle;
     private Animation currentAnimation;
     private boolean fishTracing = false;
 
@@ -111,7 +112,6 @@ public class SimpleFish implements Fish {
 
     @Override
     public void draw(GraphicsContext gc) {
-        // TODO: fish should look like fish :-)
         // TODO: keep fish name labels always visible, if possible
         // TODO: labels of dead fish should be drawn vertical or at least with an angle to prevent cluttering at the surface
 
@@ -120,7 +120,7 @@ public class SimpleFish implements Fish {
         currentAnimation.draw(gc);
 
         if (labelStates.contains(getState())) {
-            drawLabel(gc);
+//            drawLabel(gc);
         }
     }
 
@@ -149,14 +149,33 @@ public class SimpleFish implements Fish {
     }
 
     @Override
+    public void setAngle(double angle) {
+        if (fishTracing) fishTracing(String.format("fish set angle to %s", angle));
+
+        this.angle = angle;
+    }
+
+    @Override
+    public double getAngle() {
+        return angle;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
 
     private void drawLabel(GraphicsContext gc) {
-        gc.setFill(Color.GREY);
+        gc.save();
         gc.setFont(Font.font(9));
+        gc.setFill(Color.GREY);
+
+        if (state.equals(DEAD) || state.equals(DEAD_PENDING)) {
+            gc.rotate(-45);
+        }
+
         gc.fillText(getName(), getX(), getY());
+        gc.restore();
     }
 
     protected void initFishTracing() {

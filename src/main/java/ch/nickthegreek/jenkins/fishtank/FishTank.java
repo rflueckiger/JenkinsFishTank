@@ -56,6 +56,7 @@ public class FishTank implements FishTankMetrics {
 
         fish.setX(rnd.nextDouble() * getWidth());
         fish.setY(waterOffset + rnd.nextDouble() * waterHeight);
+        fish.setAngle(rnd.nextDouble() * 360);
     }
 
     public void update(long now) {

@@ -3,21 +3,24 @@ package ch.nickthegreek.jenkins.fishtank.simplefish;
 import ch.nickthegreek.jenkins.fishtank.Fish;
 import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.transform.Rotate;
 
 import java.util.Random;
+
+import static ch.nickthegreek.jenkins.fishtank.FishState.DEAD;
+import static ch.nickthegreek.jenkins.fishtank.FishState.DEAD_PENDING;
 
 public class FloatAnimation extends Animation {
 
     private final Random rnd = new Random();
-    private final Color color;
 
     private long markTime;
 
-    public FloatAnimation(Color color) {
+    public FloatAnimation() {
         super(true);
-
-        this.color = color;
     }
 
     @Override
@@ -27,6 +30,8 @@ public class FloatAnimation extends Animation {
 
     @Override
     protected boolean doUpdate(long now, FishTankMetrics metrics) {
+        // TODO: floating should mean stay at the surface - even if the surface changes its height :-)
+
         double elapsedTime = now - markTime;
         double pixelsPerNanoSecond = 1d / (1000d * 1000d * 1000d);
         double distanceCovered = elapsedTime * pixelsPerNanoSecond;
@@ -44,11 +49,18 @@ public class FloatAnimation extends Animation {
 
     @Override
     protected void doDraw(GraphicsContext gc) {
-        gc.setFill(color);
-        gc.fillOval(getFish().getX(), getFish().getY(), 10, 10);
+        gc.save();
+
+        drawRotatedImage(gc, FishImages.getDeadImage(), 0, getFish().getX(), getFish().getY());
+
+        gc.setFont(Font.font(9));
+        gc.setFill(Color.GREY);
+        drawRotatedText(gc, getFish().getName(), -45, getFish().getX(), getFish().getY());
+
+        gc.restore();
     }
 
-    public static FloatAnimation red() {
-        return new FloatAnimation(Color.RED);
+    public static FloatAnimation create() {
+        return new FloatAnimation();
     }
 }

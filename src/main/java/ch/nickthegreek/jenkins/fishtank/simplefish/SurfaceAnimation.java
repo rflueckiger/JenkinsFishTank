@@ -2,16 +2,11 @@ package ch.nickthegreek.jenkins.fishtank.simplefish;
 
 import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 public class SurfaceAnimation extends Animation {
 
-    private final Color color;
-
-    public SurfaceAnimation(Color color) {
+    public SurfaceAnimation() {
         super(false);
-
-        this.color = color;
     }
 
     @Override
@@ -33,11 +28,10 @@ public class SurfaceAnimation extends Animation {
 
     @Override
     protected void doDraw(GraphicsContext gc) {
-        gc.setFill(color);
-        gc.fillOval(getFish().getX(), getFish().getY(), 10, 10);
+        drawRotatedImage(gc, FishImages.getDeadImage(), 0, getFish().getX(), getFish().getY());
     }
 
-    public static SurfaceAnimation red() {
-        return new SurfaceAnimation(Color.RED);
+    public static SurfaceAnimation create() {
+        return new SurfaceAnimation();
     }
 }

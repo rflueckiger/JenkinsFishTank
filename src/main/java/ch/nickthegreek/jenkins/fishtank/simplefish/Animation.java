@@ -2,8 +2,9 @@ package ch.nickthegreek.jenkins.fishtank.simplefish;
 
 import ch.nickthegreek.jenkins.fishtank.Fish;
 import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.transform.Rotate;
 
 abstract class Animation {
 
@@ -66,6 +67,25 @@ abstract class Animation {
 
     protected Fish getFish() {
         return fish;
+    }
+
+    private void rotate(GraphicsContext gc, double angle, double x, double y) {
+        Rotate rotate = new Rotate(angle, x, y);
+        gc.setTransform(rotate.getMxx(), rotate.getMyx(), rotate.getMxy(), rotate.getMyy(), rotate.getTx(), rotate.getTy());
+    }
+
+    protected void drawRotatedText(GraphicsContext gc, String text, double angle, double x, double y) {
+        gc.save();
+        rotate(gc, angle, x, y);
+        gc.fillText(text, x, y);
+        gc.restore();
+    }
+
+    protected void drawRotatedImage(GraphicsContext gc, Image image, double angle, double x, double y) {
+        gc.save();
+        rotate(gc, angle, x + image.getWidth() / 2, y + image.getHeight() / 2);
+        gc.drawImage(image, x, y);
+        gc.restore();
     }
 
 }

@@ -4,22 +4,25 @@ import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
-public class SwimAnimation extends Animation {
 
-    private final Color color;
+public abstract class SwimAnimation extends Animation {
+
     private final Random rnd = new Random();
 
     private Point2D start;
     private Point2D target;
 
-    public SwimAnimation(Color color) {
+    public SwimAnimation() {
         super(true);
-
-        this.color = color;
     }
 
     @Override
@@ -34,16 +37,36 @@ public class SwimAnimation extends Animation {
 
     @Override
     protected void doDraw(GraphicsContext gc) {
-        gc.setFill(color);
-        gc.fillOval(getFish().getX(), getFish().getY(), 10, 10);
+        // TODO: draw label?
+        // TODO: fish moves in vertical directions should not rotate the fish much, expect when speed is high
+
+        double angle = 0;
+        if (getFish().getAngle() < 90 || getFish().getAngle() > 270) {
+            angle = 0;
+        } else if (getFish().getAngle() > 90 && getFish().getAngle() < 270) {
+            // TODO: fish needs mirroring
+            angle = 180;
+        } else if (getFish().getAngle() == 90 || getFish().getAngle() == 270) {
+            // TODO: use direction of last move
+            angle = 0;
+        }
+
+        Image image = getFishImage();
+
+        double x = getFish().getX() - image.getWidth() / 2;
+        double y = getFish().getY() - image.getHeight() / 2;
+
+        drawRotatedImage(gc, image, angle, x, y);
     }
+
+    protected abstract Image getFishImage();
 
     @Override
     protected boolean doUpdate(long now, FishTankMetrics metrics) {
-        // TODO: consider the size of the fish (currently, everything drawn to the left of x,y is still outside the boundary)
         double xDelta = target.getX() - start.getX();
         double yDelta = target.getY() - start.getY();
         double distance = Math.sqrt(Math.pow(xDelta, 2) + Math.pow(yDelta, 2));
+        double angle = (Math.atan2(yDelta, xDelta) + Math.PI) / Math.PI * 180;
         double pixelsPerNanoSecond = 10d / (1000d * 1000d * 1000d);
         double moveDuration = distance / pixelsPerNanoSecond;
 
@@ -57,38 +80,33 @@ public class SwimAnimation extends Animation {
 
         Rectangle2D boundary = metrics.getAquaticBoundary();
 
-        // the simple fish continues his unfinished path like a billiard ball when hitting a wall
-        if (currentX < boundary.getMinX()) {
-            currentX = boundary.getMinX() + Math.abs((boundary.getMinX() - currentX));
-        }
-        if (currentY < boundary.getMinY()) {
-            currentY = boundary.getMinY() + Math.abs((boundary.getMinY() - currentY));
-        }
+        // if the fish moves outside of the boundaries, fix it and interrupt the move
+        boolean finished = factor >= 1;
+        double halfFishWidth = getFishImage().getWidth() / 2;
+        double halfFishHeight = getFishImage().getHeight() / 2;
 
-        if (currentX > boundary.getMaxX()) {
-            currentX = (2 * boundary.getMaxX()) - currentX;
+        if (currentX < boundary.getMinX() + halfFishWidth) {
+            currentX = boundary.getMinX() + halfFishWidth;
+            finished = true;
         }
-        if (currentY > boundary.getMaxY()) {
-            currentY = (2 * boundary.getMaxY()) - currentY;
+        if (currentY < boundary.getMinY() + halfFishHeight) {
+            currentY = boundary.getMinY() + halfFishHeight;
+            finished = true;
+        }
+        if (currentX > boundary.getMaxX() - halfFishWidth) {
+            currentX = boundary.getMaxX() - halfFishWidth;
+            finished = true;
+        }
+        if (currentY > boundary.getMaxY() - halfFishHeight) {
+            currentY = boundary.getMaxY() - halfFishHeight;
+            finished = true;
         }
 
         getFish().setX(currentX);
         getFish().setY(currentY);
+        getFish().setAngle(angle);
 
-        return factor >= 1;
+        return finished;
     }
 
-    public static SwimAnimation green() {
-        return new SwimAnimation(Color.GREEN);
-    }
-
-
-    public static SwimAnimation yellow() {
-        return new SwimAnimation(Color.YELLOW);
-    }
-
-
-    public static SwimAnimation grey() {
-        return new SwimAnimation(Color.GREY);
-    }
 }
