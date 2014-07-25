@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class FishTankUpdateJob implements Runnable {
 
@@ -20,16 +21,25 @@ public class FishTankUpdateJob implements Runnable {
     public void run() {
         System.out.println("updating fish tank data...");
 
+        fishTank.dataQualityStateProperty().setValue(DataQualityState.Updating);
         dataSource.loadData(inputStream -> {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 JsonResponse jsonResponse = objectMapper.readValue(inputStream, JsonResponse.class);
 
+                Random rnd = new Random();
+                if (rnd.nextBoolean()) {
+                    throw new RuntimeException("bäm");
+                }
+
                 for (Job job : jsonResponse.getJobs()) {
                     Platform.runLater(() -> fishTank.addOrUpdateData(job.getName(), deriveState(job.getColor())));
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+
+                fishTank.dataQualityStateProperty().setValue(DataQualityState.UpToDate);
+            } catch (Exception e) {
+                fishTank.dataQualityStateProperty().setValue(DataQualityState.OutOfDate);
+                Platform.runLater(() -> fishTank.handleException(e));
             }
         });
     }

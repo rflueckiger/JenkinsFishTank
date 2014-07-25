@@ -2,12 +2,15 @@ package ch.nickthegreek.jenkins.fishtank;
 
 import ch.nickthegreek.jenkins.fishtank.simplefish.SimpleFish;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -20,6 +23,7 @@ public class FishTank implements FishTankMetrics {
 
     private final DoubleProperty widthProperty = new SimpleDoubleProperty(0);
     private final DoubleProperty heightProperty = new SimpleDoubleProperty(0);
+    private final ObjectProperty<DataQualityState> dataQualityStateProperty = new SimpleObjectProperty<>(DataQualityState.OutOfDate);
 
     private final Random rnd = new Random();
 
@@ -83,6 +87,26 @@ public class FishTank implements FishTankMetrics {
             }
             drawPlaneForeground(gc, plane);
         }
+
+        // draw data quality state indicator
+        drawDataQualityStateIndicator(gc);
+    }
+
+    private void drawDataQualityStateIndicator(GraphicsContext gc) {
+        gc.save();
+        if (DataQualityState.Updating.equals(getDataQualityState())) {
+            gc.setFill(Color.ORANGE);
+        } else if (DataQualityState.UpToDate.equals(getDataQualityState())) {
+            gc.setFill(Color.AQUA);
+        } else if (DataQualityState.OutOfDate.equals(getDataQualityState())) {
+            gc.setFill(Color.RED);
+        }
+
+        double x = getBoundary().getMinX() + 10;
+        double y = getBoundary().getMaxY() - 35;
+
+        gc.fillRect(x, y, 3, 3);
+        gc.restore();
     }
 
     protected void drawPlaneForeground(GraphicsContext gc, int plane) {
@@ -114,6 +138,10 @@ public class FishTank implements FishTankMetrics {
         return heightProperty;
     }
 
+    public ObjectProperty<DataQualityState> dataQualityStateProperty() { return dataQualityStateProperty; }
+
+    public DataQualityState getDataQualityState() { return dataQualityStateProperty.getValue(); }
+
     @Override
     public Rectangle2D getAquaticBoundary() {
         return aquaticBoundary;
@@ -122,5 +150,9 @@ public class FishTank implements FishTankMetrics {
     @Override
     public Rectangle2D getBoundary() {
         return boundary;
+    }
+
+    public void handleException(Exception e) {
+        e.printStackTrace();
     }
 }
