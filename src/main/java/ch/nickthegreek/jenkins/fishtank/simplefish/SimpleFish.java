@@ -29,10 +29,6 @@ public class SimpleFish implements Fish {
     private Animation currentAnimation;
     private boolean fishTracing = false;
 
-    private List<FishState> labelStates = Arrays.asList(
-            DEAD, DEAD_PENDING,
-            SICK, SICK_PENDING,
-            ALIVE_PENDING);
     private int plane;
 
     public SimpleFish(String name, FishState state) {
@@ -118,10 +114,6 @@ public class SimpleFish implements Fish {
         if (fishTracing) fishTracing("draw fish");
 
         currentAnimation.draw(gc);
-
-        if (labelStates.contains(getState())) {
-//            drawLabel(gc);
-        }
     }
 
     @Override
@@ -175,19 +167,6 @@ public class SimpleFish implements Fish {
     @Override
     public String getName() {
         return name;
-    }
-
-    private void drawLabel(GraphicsContext gc) {
-        gc.save();
-        gc.setFont(Font.font(9));
-        gc.setFill(Color.GREY);
-
-        if (state.equals(DEAD) || state.equals(DEAD_PENDING)) {
-            gc.rotate(-45);
-        }
-
-        gc.fillText(getName(), getX(), getY());
-        gc.restore();
     }
 
     protected void initFishTracing() {

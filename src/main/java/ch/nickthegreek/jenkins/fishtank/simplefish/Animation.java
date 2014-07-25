@@ -2,8 +2,11 @@ package ch.nickthegreek.jenkins.fishtank.simplefish;
 
 import ch.nickthegreek.jenkins.fishtank.Fish;
 import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
+import com.sun.javafx.tk.Toolkit;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 

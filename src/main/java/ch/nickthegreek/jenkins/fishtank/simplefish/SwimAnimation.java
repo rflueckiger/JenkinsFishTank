@@ -1,6 +1,7 @@
 package ch.nickthegreek.jenkins.fishtank.simplefish;
 
 import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
+import com.sun.javafx.tk.Toolkit;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -8,6 +9,7 @@ import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +22,7 @@ public abstract class SwimAnimation extends Animation {
 
     private Point2D start;
     private Point2D target;
+    private boolean labelEnabled = true;
 
     public SwimAnimation() {
         super(true);
@@ -59,6 +62,10 @@ public abstract class SwimAnimation extends Animation {
         double y = getFish().getY() - image.getHeight() / 2;
 
         drawRotatedImage(gc, image, 0, x, y);
+
+        if (isLabelEnabled()) {
+            drawLabel(gc);
+        }
     }
 
     protected abstract Image getFishImageL();
@@ -112,4 +119,25 @@ public abstract class SwimAnimation extends Animation {
         return finished;
     }
 
+    protected void drawLabel(GraphicsContext gc) {
+        gc.save();
+        gc.setFont(Font.font(9));
+        gc.setFill(Color.BLACK);
+
+        float textExtent = Toolkit.getToolkit().getFontLoader().computeStringWidth(getFish().getName(), gc.getFont());
+
+        double x = getFish().getX() - textExtent / 2;
+        double y = getFish().getY() + getFishImageL().getHeight() / 2 + 10;
+
+        gc.fillText(getFish().getName(), x, y);
+        gc.restore();
+    }
+
+    public void setLabelEnabled(boolean labelEnabled) {
+        this.labelEnabled = labelEnabled;
+    }
+
+    public boolean isLabelEnabled() {
+        return labelEnabled;
+    }
 }

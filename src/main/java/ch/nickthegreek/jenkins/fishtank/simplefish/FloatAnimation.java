@@ -51,11 +51,14 @@ public class FloatAnimation extends Animation {
     protected void doDraw(GraphicsContext gc) {
         gc.save();
 
-        drawRotatedImage(gc, getFishImageL(), 0, getFish().getX(), getFish().getY());
+        double x = getFish().getX() - getFishImageL().getWidth() / 2;
+        double y = getFish().getY() - getFishImageL().getHeight() / 2;
+
+        drawRotatedImage(gc, getFishImageL(), 0, x, y);
 
         gc.setFont(Font.font(9));
         gc.setFill(Color.GREY);
-        drawRotatedText(gc, getFish().getName(), -45, getFish().getX(), getFish().getY());
+        drawRotatedText(gc, getFish().getName(), -45, getFish().getX(), getFish().getY() - getFishImageL().getHeight() / 2);
 
         gc.restore();
     }

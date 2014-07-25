@@ -1,26 +1,37 @@
 package ch.nickthegreek.jenkins.fishtank.simplefish;
 
 import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
+import com.sun.javafx.tk.Toolkit;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class SurfaceAnimation extends Animation {
 
-    private final double pixelsPerNanoSecond = 0.01d / (1000d * 1000d * 1000d);
+    private final double pixelsPerNanoSecond = 10d / (1000d * 1000d * 1000d);
+    private double markTime;
 
     public SurfaceAnimation() {
         super(false);
     }
 
     @Override
+    protected void doInit(long startTime, FishTankMetrics metrics) {
+        markTime = startTime;
+    }
+
+    @Override
     protected boolean doUpdate(long now, FishTankMetrics metrics) {
-        double elapsedTime = now - getStartTime();
+        double elapsedTime = now - markTime;
         double distanceCovered = elapsedTime * pixelsPerNanoSecond;
+
+        markTime = now;
 
         double newY = getFish().getY() - distanceCovered;
         double waterSurface = metrics.getAquaticBoundary().getMinY();
-        if (newY <= waterSurface - getFishImageL().getHeight() / 2) {
-            getFish().setY(waterSurface - getFishImageL().getHeight() / 2);
+        if (newY <= waterSurface) {
+            getFish().setY(waterSurface);
             return true;
         } else {
             getFish().setY(newY);
@@ -34,7 +45,25 @@ public class SurfaceAnimation extends Animation {
 
     @Override
     protected void doDraw(GraphicsContext gc) {
-        drawRotatedImage(gc, FishImages.getDeadImageL(), 0, getFish().getX(), getFish().getY());
+        double x = getFish().getX() - getFishImageL().getWidth() / 2;
+        double y = getFish().getY() - getFishImageL().getHeight() / 2;
+
+        drawRotatedImage(gc, FishImages.getDeadImageL(), 0, x, y);
+        drawLabel(gc);
+    }
+
+    protected void drawLabel(GraphicsContext gc) {
+        gc.save();
+        gc.setFont(Font.font(9));
+        gc.setFill(Color.BLACK);
+
+        float textExtent = Toolkit.getToolkit().getFontLoader().computeStringWidth(getFish().getName(), gc.getFont());
+
+        double x = getFish().getX() - textExtent / 2;
+        double y = getFish().getY() + getFishImageL().getHeight() / 2 + 10;
+
+        gc.fillText(getFish().getName(), x, y);
+        gc.restore();
     }
 
     public static SurfaceAnimation create() {

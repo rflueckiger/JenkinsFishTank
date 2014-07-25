@@ -23,7 +23,7 @@ public class FishTank implements FishTankMetrics {
 
     private final Random rnd = new Random();
 
-    private double airWaterRatio = 0.1;
+    private double airWaterRatio = 0.15;
 
     private Rectangle2D boundary;
     private Rectangle2D aquaticBoundary;
@@ -96,17 +96,14 @@ public class FishTank implements FishTankMetrics {
     protected void drawPlaneForeground(GraphicsContext gc, int plane) {
         gc.save();
         gc.setFill(Color.AQUA);
-        gc.setGlobalAlpha(0.35);
+        gc.setGlobalAlpha(0.3);
         gc.fillRect(aquaticBoundary.getMinX(), aquaticBoundary.getMinY(), aquaticBoundary.getWidth(), aquaticBoundary.getHeight());
         gc.restore();
     }
 
     public void drawSelf(GraphicsContext gc) {
-        double airHeight = getHeight() * airWaterRatio;
-        double waterHeight = getHeight() - airHeight;
-
         gc.setFill(Color.AQUA);
-        gc.fillRect(0, airHeight, getWidth(), waterHeight);
+        gc.fillRect(aquaticBoundary.getMinX(), aquaticBoundary.getMinY(), aquaticBoundary.getWidth(), aquaticBoundary.getHeight());
     }
 
     public double getWidth() {
