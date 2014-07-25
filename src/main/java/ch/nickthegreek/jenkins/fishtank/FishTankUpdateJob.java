@@ -4,9 +4,6 @@ package ch.nickthegreek.jenkins.fishtank;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 
-import java.io.IOException;
-import java.util.Random;
-
 public class FishTankUpdateJob implements Runnable {
 
     private final JsonDataSource dataSource;
@@ -26,11 +23,6 @@ public class FishTankUpdateJob implements Runnable {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 JsonResponse jsonResponse = objectMapper.readValue(inputStream, JsonResponse.class);
-
-                Random rnd = new Random();
-                if (rnd.nextBoolean()) {
-                    throw new RuntimeException("bäm");
-                }
 
                 for (Job job : jsonResponse.getJobs()) {
                     Platform.runLater(() -> fishTank.addOrUpdateData(job.getName(), deriveState(job.getColor())));
