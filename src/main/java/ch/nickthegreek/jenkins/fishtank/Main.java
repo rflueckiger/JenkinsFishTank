@@ -101,21 +101,8 @@ public class Main extends Application {
         timer.start();
 
         // poll for data
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-            System.out.println("refresh data...");
-            getDataSource().loadData(inputStream -> {
-                ObjectMapper objectMapper = new ObjectMapper();
-                try {
-                    JsonResponse jsonResponse = objectMapper.readValue(inputStream, JsonResponse.class);
-
-                    for (Job job : jsonResponse.getJobs()) {
-                        Platform.runLater(() -> fishTank.addOrUpdateData(job.getName(), deriveState(job.getColor())));
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }, 0, 30, TimeUnit.SECONDS);
+        FishTankUpdateJob fishTankUpdateJob = new FishTankUpdateJob(getDataSource(), fishTank);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(fishTankUpdateJob, 0, 30, TimeUnit.SECONDS);
     }
 
     private void handleScriptedEvents(long now) {
@@ -133,24 +120,6 @@ public class Main extends Application {
 
     public JsonDataSource getDataSource() {
         return dataSource;
-    }
-
-    private FishState deriveState(String color) {
-        if ("blue".equals(color)) {
-            return FishState.ALIVE;
-        } else if ("blue_anime".equals(color)) {
-            return FishState.ALIVE_PENDING;
-        } else if ("red".equals(color)) {
-            return FishState.DEAD;
-        } else if ("red_anime".equals(color)) {
-            return FishState.DEAD_PENDING;
-        } else if ("yellow".equals(color)) {
-            return FishState.SICK;
-        } else if ("yellow_anime".equals(color)) {
-            return FishState.SICK_PENDING;
-        } else {
-            return FishState.GHOST;
-        }
     }
 
 }
