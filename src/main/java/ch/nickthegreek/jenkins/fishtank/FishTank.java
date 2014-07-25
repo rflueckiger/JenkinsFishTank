@@ -66,7 +66,7 @@ public class FishTank implements FishTankMetrics {
     }
 
     public void update(long now) {
-emor        for (Fish fish : fishes.values()) {
+        for (Fish fish : fishes.values()) {
             fish.update(now, this);
         }
     }
