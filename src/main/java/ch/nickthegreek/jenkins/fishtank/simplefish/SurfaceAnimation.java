@@ -7,9 +7,13 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.util.Random;
+
 public class SurfaceAnimation extends Animation {
 
-    private final double pixelsPerNanoSecond = 10d / (1000d * 1000d * 1000d);
+    private static final Random RND = new Random();
+
+    private double pixelsPerNanoSecond;
     private double markTime;
 
     public SurfaceAnimation() {
@@ -19,6 +23,8 @@ public class SurfaceAnimation extends Animation {
     @Override
     protected void doInit(long startTime, FishTankMetrics metrics) {
         markTime = startTime;
+
+        pixelsPerNanoSecond = (2 + RND.nextDouble() * 5) / (1000d * 1000d * 1000d);
     }
 
     @Override
