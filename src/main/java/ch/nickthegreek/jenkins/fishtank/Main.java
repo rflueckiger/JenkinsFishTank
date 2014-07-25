@@ -16,10 +16,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
 
@@ -57,6 +59,9 @@ public class Main extends Application {
         primaryStage.setWidth(1024);
         primaryStage.setHeight(800);
         primaryStage.setFullScreen(false);
+        primaryStage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
 
         // create canvas
         Canvas canvas = new Canvas();
@@ -95,8 +100,22 @@ public class Main extends Application {
 
         timer.start();
 
-        // load initial data (later: start data polling thread)
-        refreshData();
+        // poll for data
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            System.out.println("refresh data...");
+            getDataSource().loadData(inputStream -> {
+                ObjectMapper objectMapper = new ObjectMapper();
+                try {
+                    JsonResponse jsonResponse = objectMapper.readValue(inputStream, JsonResponse.class);
+
+                    for (Job job : jsonResponse.getJobs()) {
+                        Platform.runLater(() -> fishTank.addOrUpdateData(job.getName(), deriveState(job.getColor())));
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }, 0, 30, TimeUnit.SECONDS);
     }
 
     private void handleScriptedEvents(long now) {
@@ -112,31 +131,8 @@ public class Main extends Application {
         }
     }
 
-    private void refreshData() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            getDataSource().loadData(inputStream -> {
-                ObjectMapper objectMapper = new ObjectMapper();
-                try {
-                    JsonResponse jsonResponse = objectMapper.readValue(inputStream, JsonResponse.class);
-
-                    Platform.runLater(() -> setJobs(jsonResponse.getJobs()));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        });
-    }
-
     public JsonDataSource getDataSource() {
         return dataSource;
-    }
-
-    private void setJobs(List<Job> jobs) {
-        // TODO: this should probably be done from the loader thread
-        // TODO: sync every job by itself into the model, so the drawing loop is only stopped for short periods of time
-        for (Job job : jobs) {
-            fishTank.addOrUpdateData(job.getName(), deriveState(job.getColor()));
-        }
     }
 
     private FishState deriveState(String color) {
