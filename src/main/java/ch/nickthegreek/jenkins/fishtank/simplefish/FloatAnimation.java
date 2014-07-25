@@ -18,6 +18,7 @@ public class FloatAnimation extends Animation {
     private final Random rnd = new Random();
 
     private long markTime;
+    private final double pixelsPerNanoSecond = 0.01d / (1000d * 1000d * 1000d);
 
     public FloatAnimation() {
         super(true);
@@ -33,7 +34,6 @@ public class FloatAnimation extends Animation {
         // TODO: floating should mean stay at the surface - even if the surface changes its height :-)
 
         double elapsedTime = now - markTime;
-        double pixelsPerNanoSecond = 1d / (1000d * 1000d * 1000d);
         double distanceCovered = elapsedTime * pixelsPerNanoSecond;
 
         double newX = getFish().getX() + ((rnd.nextBoolean() ? 1 : -1) * distanceCovered);
@@ -51,13 +51,17 @@ public class FloatAnimation extends Animation {
     protected void doDraw(GraphicsContext gc) {
         gc.save();
 
-        drawRotatedImage(gc, FishImages.getDeadImage(), 0, getFish().getX(), getFish().getY());
+        drawRotatedImage(gc, getFishImageL(), 0, getFish().getX(), getFish().getY());
 
         gc.setFont(Font.font(9));
         gc.setFill(Color.GREY);
         drawRotatedText(gc, getFish().getName(), -45, getFish().getX(), getFish().getY());
 
         gc.restore();
+    }
+
+    protected Image getFishImageL() {
+        return FishImages.getDeadImageL();
     }
 
     public static FloatAnimation create() {

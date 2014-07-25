@@ -5,6 +5,7 @@ import ch.nickthegreek.jenkins.fishtank.FishTankMetrics;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
 
 abstract class Animation {
 
@@ -69,7 +70,7 @@ abstract class Animation {
         return fish;
     }
 
-    private void rotate(GraphicsContext gc, double angle, double x, double y) {
+    protected void rotate(GraphicsContext gc, double angle, double x, double y) {
         Rotate rotate = new Rotate(angle, x, y);
         gc.setTransform(rotate.getMxx(), rotate.getMyx(), rotate.getMxy(), rotate.getMyy(), rotate.getTx(), rotate.getTy());
     }

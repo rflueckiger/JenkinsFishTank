@@ -33,6 +33,7 @@ public class SimpleFish implements Fish {
             DEAD, DEAD_PENDING,
             SICK, SICK_PENDING,
             ALIVE_PENDING);
+    private int plane;
 
     public SimpleFish(String name, FishState state) {
         this.name = name;
@@ -53,7 +54,6 @@ public class SimpleFish implements Fish {
             // TODO: add sick animation for sick fishes
             // TODO: add pulsating animation for "pending" fishes
             // TODO: add alternate animation for ghost fishes (slower?)
-            // TODO: add more fish drawing variety (e.g. alive fishes in different green/blue shades)
 
             Animation[] animations = transitions.nextAnimations(this.state, state);
             forceAnimations(animations);
@@ -158,6 +158,18 @@ public class SimpleFish implements Fish {
     @Override
     public double getAngle() {
         return angle;
+    }
+
+    @Override
+    public void setPlane(int plane) {
+        if (fishTracing) fishTracing(String.format("fish set plane to %s", plane));
+
+        this.plane = plane;
+    }
+
+    @Override
+    public int getPlane() {
+        return plane;
     }
 
     @Override

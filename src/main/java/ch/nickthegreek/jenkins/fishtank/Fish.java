@@ -28,4 +28,7 @@ public interface Fish {
 
     double getAngle();
 
+    void setPlane(int plane);
+
+    int getPlane();
 }

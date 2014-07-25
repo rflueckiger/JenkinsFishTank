@@ -9,10 +9,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -60,6 +62,9 @@ public class Main extends Application {
         Canvas canvas = new Canvas();
         canvas.widthProperty().bind(primaryStage.widthProperty());
         canvas.heightProperty().bind(primaryStage.heightProperty());
+        canvas.setOnMouseClicked(event -> {
+            System.out.println(String.format("clicked: (%s, %s)", event.getX(), event.getY()));
+        });
 
         fishTank.widthProperty().bind(canvas.widthProperty());
         fishTank.heightProperty().bind(canvas.heightProperty());

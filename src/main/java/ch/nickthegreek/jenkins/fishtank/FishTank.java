@@ -14,6 +14,8 @@ import java.util.Random;
 
 public class FishTank implements FishTankMetrics {
 
+    private static final int PLANE_COUNT = 3;
+
     private Map<String, Fish> fishes = new HashMap<>();
 
     private final DoubleProperty widthProperty = new SimpleDoubleProperty(0);
@@ -24,19 +26,22 @@ public class FishTank implements FishTankMetrics {
     private double airWaterRatio = 0.1;
 
     private Rectangle2D boundary;
-    private Rectangle2D waterBoundary;
+    private Rectangle2D aquaticBoundary;
 
-    private final ChangeListener<Number> updateWaterBoundaryListener = (observable, oldValue, newValue) -> {
+    private final ChangeListener<Number> updateAquaticBoundaryListener = (observable, oldValue, newValue) -> {
         double waterOffset = getHeight() * airWaterRatio;
         double waterHeight = getHeight() - waterOffset;
 
         boundary = new Rectangle2D(0, 0, getWidth(), getHeight());
-        waterBoundary = new Rectangle2D(0, waterOffset, getWidth(), waterHeight);
+        aquaticBoundary = new Rectangle2D(0, waterOffset, getWidth(), waterHeight);
+
+        System.out.println(String.format("fish tank boundary: %s", boundary));
+        System.out.println(String.format("fish tank aquatic boundary: %s", aquaticBoundary));
     };
 
     public FishTank() {
-        widthProperty().addListener(updateWaterBoundaryListener);
-        heightProperty().addListener(updateWaterBoundaryListener);
+        widthProperty().addListener(updateAquaticBoundaryListener);
+        heightProperty().addListener(updateAquaticBoundaryListener);
     }
 
     public void addOrUpdateData(String name, FishState state) {
@@ -51,12 +56,15 @@ public class FishTank implements FishTankMetrics {
     }
 
     public void assignNewLocation(Fish fish) {
+        // TODO: add fish randomly to one of two or three different planes (with sea weed in between) for added effect
+
         double waterOffset = getHeight() * airWaterRatio;
         double waterHeight = getHeight() - waterOffset;
 
         fish.setX(rnd.nextDouble() * getWidth());
         fish.setY(waterOffset + rnd.nextDouble() * waterHeight);
         fish.setAngle(rnd.nextDouble() * 360);
+        fish.setPlane(rnd.nextInt(PLANE_COUNT));
     }
 
     public void update(long now) {
@@ -68,15 +76,29 @@ public class FishTank implements FishTankMetrics {
     }
 
     private void updateSelf(long now) {
-        // TODO: add fancy fish tank animations (e.g. water surface waves)
+        // TODO: add fancy fish tank animations (e.g. water surface waves, sea weed, ...)
     }
 
     public void drawAll(GraphicsContext gc) {
         drawSelf(gc);
 
-        for (Fish fish : fishes.values()) {
-            fish.draw(gc);
+        // draw fish last plane first
+        for (int plane = 0; plane < PLANE_COUNT; plane++) {
+            for (Fish fish : fishes.values()) {
+                if (fish.getPlane() == plane) {
+                    fish.draw(gc);
+                }
+            }
+            drawPlaneForeground(gc, plane);
         }
+    }
+
+    protected void drawPlaneForeground(GraphicsContext gc, int plane) {
+        gc.save();
+        gc.setFill(Color.AQUA);
+        gc.setGlobalAlpha(0.35);
+        gc.fillRect(aquaticBoundary.getMinX(), aquaticBoundary.getMinY(), aquaticBoundary.getWidth(), aquaticBoundary.getHeight());
+        gc.restore();
     }
 
     public void drawSelf(GraphicsContext gc) {
@@ -105,7 +127,7 @@ public class FishTank implements FishTankMetrics {
 
     @Override
     public Rectangle2D getAquaticBoundary() {
-        return waterBoundary;
+        return aquaticBoundary;
     }
 
     @Override

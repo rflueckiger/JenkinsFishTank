@@ -40,26 +40,29 @@ public abstract class SwimAnimation extends Animation {
         // TODO: draw label?
         // TODO: fish moves in vertical directions should not rotate the fish much, expect when speed is high
 
+        Image image = null;
+
         double angle = 0;
         if (getFish().getAngle() < 90 || getFish().getAngle() > 270) {
+            image = getFishImageL();
             angle = 0;
         } else if (getFish().getAngle() > 90 && getFish().getAngle() < 270) {
-            // TODO: fish needs mirroring
+            image = getFishImageR();
             angle = 180;
         } else if (getFish().getAngle() == 90 || getFish().getAngle() == 270) {
             // TODO: use direction of last move
+            image = getFishImageL();
             angle = 0;
         }
-
-        Image image = getFishImage();
 
         double x = getFish().getX() - image.getWidth() / 2;
         double y = getFish().getY() - image.getHeight() / 2;
 
-        drawRotatedImage(gc, image, angle, x, y);
+        drawRotatedImage(gc, image, 0, x, y);
     }
 
-    protected abstract Image getFishImage();
+    protected abstract Image getFishImageL();
+    protected abstract Image getFishImageR();
 
     @Override
     protected boolean doUpdate(long now, FishTankMetrics metrics) {
@@ -82,8 +85,8 @@ public abstract class SwimAnimation extends Animation {
 
         // if the fish moves outside of the boundaries, fix it and interrupt the move
         boolean finished = factor >= 1;
-        double halfFishWidth = getFishImage().getWidth() / 2;
-        double halfFishHeight = getFishImage().getHeight() / 2;
+        double halfFishWidth = getFishImageL().getWidth() / 2;
+        double halfFishHeight = getFishImageL().getHeight() / 2;
 
         if (currentX < boundary.getMinX() + halfFishWidth) {
             currentX = boundary.getMinX() + halfFishWidth;
