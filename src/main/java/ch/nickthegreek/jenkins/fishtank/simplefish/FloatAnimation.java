@@ -31,8 +31,6 @@ public class FloatAnimation extends Animation {
 
     @Override
     protected boolean doUpdate(long now, FishTankMetrics metrics) {
-        // TODO: floating should mean stay at the surface - even if the surface changes its height :-)
-
         double elapsedTime = now - markTime;
         double distanceCovered = elapsedTime * pixelsPerNanoSecond;
 

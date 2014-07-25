@@ -40,9 +40,6 @@ public abstract class SwimAnimation extends Animation {
 
     @Override
     protected void doDraw(GraphicsContext gc) {
-        // TODO: draw label?
-        // TODO: fish moves in vertical directions should not rotate the fish much, expect when speed is high
-
         Image image = null;
 
         double angle = 0;
@@ -53,7 +50,6 @@ public abstract class SwimAnimation extends Animation {
             image = getFishImageR();
             angle = 180;
         } else if (getFish().getAngle() == 90 || getFish().getAngle() == 270) {
-            // TODO: use direction of last move
             image = getFishImageL();
             angle = 0;
         }

@@ -56,8 +56,6 @@ public class FishTank implements FishTankMetrics {
     }
 
     public void assignNewLocation(Fish fish) {
-        // TODO: add fish randomly to one of two or three different planes (with sea weed in between) for added effect
-
         double waterOffset = getHeight() * airWaterRatio;
         double waterHeight = getHeight() - waterOffset;
 
@@ -68,15 +66,9 @@ public class FishTank implements FishTankMetrics {
     }
 
     public void update(long now) {
-        updateSelf(now);
-
-        for (Fish fish : fishes.values()) {
+emor        for (Fish fish : fishes.values()) {
             fish.update(now, this);
         }
-    }
-
-    private void updateSelf(long now) {
-        // TODO: add fancy fish tank animations (e.g. water surface waves, sea weed, ...)
     }
 
     public void drawAll(GraphicsContext gc) {

@@ -46,11 +46,6 @@ public class SimpleFish implements Fish {
             throw new IllegalArgumentException("state must not be null.");
         }
         if (!state.equals(this.state)) {
-            // TODO: add dive animation for resurrected fishes
-            // TODO: add sick animation for sick fishes
-            // TODO: add pulsating animation for "pending" fishes
-            // TODO: add alternate animation for ghost fishes (slower?)
-
             Animation[] animations = transitions.nextAnimations(this.state, state);
             forceAnimations(animations);
 
@@ -79,8 +74,6 @@ public class SimpleFish implements Fish {
 
     @Override
     public void update(long now, FishTankMetrics metrics) {
-        // TODO: consider trajectory for nicer fish painting
-
         if (fishTracing) fishTracing(String.format("fish update @ %s - currentAnimation is %s", now, currentAnimation));
 
         if (currentAnimation.isFinished()) {
@@ -108,9 +101,6 @@ public class SimpleFish implements Fish {
 
     @Override
     public void draw(GraphicsContext gc) {
-        // TODO: keep fish name labels always visible, if possible
-        // TODO: labels of dead fish should be drawn vertical or at least with an angle to prevent cluttering at the surface
-
         if (fishTracing) fishTracing("draw fish");
 
         currentAnimation.draw(gc);
@@ -178,7 +168,6 @@ public class SimpleFish implements Fish {
 
     protected void fishTracing(String message) {
         if (fishTracing) {
-            // TODO: replace with proper logging statement - slf4j or some such thing
             System.out.println(String.format("%s: %s", getName(), message));
         }
     }
